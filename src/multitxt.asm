@@ -1,5 +1,7 @@
 ; Multi text screen for MSX 1.0
 ; 
+; Note: This version works for 1-40 columns only
+; 
 ; Author: Luciano M. Christofoletti
 ; Date: 26/oct/2016
 ; Version: 1.0
@@ -13,20 +15,12 @@
 ;   
 ; SCREEN 0 (Text mode, 40 column):
 ; Name table (char positions)     0000-03BF
-; Character patterns (font)       0800-0FFF
-;
-; SCREEN 0 (Text mode, 80 column):
-; Name table (char positions)     0000-077F (086F)
-; Character attribute (Blink)     0800-08EF (090D)
-; Character patterns (font)       1000-17FF
-    
-    include once "lib/msxbios.asm"
-    include "lib/msx1variables.asm"
+; Character patterns              0800-0FFF
     
 SHOWCSR     equ 09E1H       ; Show cursor on text screen
 HIDECSR     equ 0A2EH       ; Hide cursor on text screen
 APPADDR     equ 0D600H      ; The start address of application's hooks handlers
-
+    
 MAXPAGES    equ 4           ; Number of text pages
 ATTBNSAV    equ 8           ; Number of attributes saved for each screen
 LINTTBSZ    equ 24          ; Size of LINTTB table
@@ -171,13 +165,9 @@ SETSCR:
         ; Set the screen colors
         CALL CHGCLR
         
-        ; Set status of function keys display
+        ; Update function keys display (needed only when key is on)
         LD   A,(CONSDFG)
         OR   A
-        JR   NZ,KEYON
-        CALL ERAFNK
-        XOR  A
-    KEYON:
         CALL NZ,DSPFNK
         
         POP  AF

@@ -1,4 +1,5 @@
 ; Multi text screen for MSX 1.0
+; 
 ; Description: This tool allows the user cicle among multiple text
 ; screens in the basic environment.
 ; Note: This version works for 1-40 columns only
@@ -15,6 +16,7 @@
     
     include "lib/msxbios.asm"
     include "lib/msxhooks.asm"
+    include "lib/msxvars.asm"
     
 START       equ 0D000H      ; Start address of "installer" routine
     
@@ -146,7 +148,7 @@ NEWHSCRE:
     NOP
     NOP
     
-    ; The multi screen 0 routine (and its auxiliary methods)
+    ; The multi screen 0 hook handlers (and its auxiliary methods)
     ; Note that the multitxt.asm file sets it's own org directive
 MULTITXT:
     include "multitxt.asm"
