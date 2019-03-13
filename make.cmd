@@ -1,6 +1,6 @@
 echo off
-REM copy msz.bin to DOS dir from MSX projects
+REM copy multxt40.bin to DOS dir from MSX projects
 
-echo Copying msz.bin to F:\msx\dos
-copy %PROJECT_PATH%\build\msz.bin F:\msx\dos
+echo Copying multxt40 to F:\msx\dos
+copy %PROJECT_PATH%\build\multxt40.bin F:\msx\dos
 echo Ok

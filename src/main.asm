@@ -86,7 +86,7 @@ INSTALL:
     
     EI
     
-    ; Copy current page attributes to PAGEATRB table in RAM
+    ; Save current page attributes in PAGEATRB table (first entry)
     LD   DE,PAGEATRB
     SCF
     CALL COPYATRB

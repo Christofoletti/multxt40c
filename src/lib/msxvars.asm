@@ -174,32 +174,35 @@ DATPTR      equ 0F6C8H      ; 2     - Pointer to next data to read from the inst
 DEFTBL      equ 0F6CAH      ; 26    - Declaration table of variables defined by the instructions DEFINT, DEFSTR, DEFSNG and DEFDBL
 
 ;; **** Function and parameters of Basic
-PRMSTK      equ 0F6E4H      ;       - Usada pelo interpretador BASIC
-PRMLEN      equ 0F6E6H      ;       - Usada pelo interpretador BASIC
-PARM1       equ 0F6E8H      ;       - Usada pelo interpretador BASIC (buffer do FN)
-PRMPRV      equ 0F74CH      ;       - Usada pelo interpretador BASIC (FN)
-PRMLN2      equ 0F74EH      ;       - Usada pelo interpretador BASIC (FN)
-PARM2       equ 0F750H      ;       - Usada pelo interpretador BASIC (buffer do FN)
-PRMFLG      equ 0F7B4H      ;       - Usada pelo interpretador BASIC
-ARYTA2      equ 0F7B5H      ;       - Usada pelo interpretador BASIC
-NOFUNS      equ 0F7B7H      ;       - Usada pelo interpretador BASIC
-TEMP9       equ 0F7B8H      ;       - Variável temporária (interpretador BASIC)
-FUNACT      equ 0F7BAH      ;       - Usada pelo interpretador BASIC
-SWPTMP      equ 0F7BCH      ;       - Usada pelo interpretador BASIC (SWAP)
+PRMSTK      equ 0F6E4H      ; 2     - Previous definition block on the stack. (To clean the waste)
+PRMLEN      equ 0F6E6H      ; 2     - Number of bytes used in PARM1
+PARM1       equ 0F6E8H      ; 100   - Area 1 for parameters block storage (FN buffer)
+PRMPRV      equ 0F74CH      ; 2     - Pointer to previous parameter block in PARM1
+PRMLN2      equ 0F74EH      ; 2     - Number of bytes used in PARM2
+PARM2       equ 0F750H      ; 100   - Area 2 for to store the blocks being created (FN buffer)
+PRMFLG      equ 0F7B4H      ; 1     - Flag to indicate whether PARM1 was searching
+ARYTA2      equ 0F7B5H      ; 2     - End point of search
+NOFUNS      equ 0F7B7H      ; 1     - 0 if no function active
+TEMP9       equ 0F7B8H      ; 2     - Location of temporary storage for garbage collection
+FUNACT      equ 0F7BAH      ; 1     - Count of active functions
+SWPTMP      equ 0F7BCH      ; 8     - Value of first variable in instruction SWAP
 
 ;; **** Graphic tracing
-TRCFLG      equ 0F7C4H      ;       - Ativado quando TRON está ligado (BASIC)
-
-;; **** 
-FBUFFR      equ 0F7C5H      ;       - Buffer de conversão numérica (BASIC)
-DECTM2      equ 0F7F2H      ;       - Variável temporária (interpretador BASIC)
-DECCNT      equ 0F7F4H      ;       - Variável temporária (interpretador BASIC)
-DAC         equ 0F7F6H      ;       - Buffer de avaliação de expressão do BASIC
-HOLD8       equ 0F806H      ;       - Buffer temporário de multiplicação (BASIC)
-ARG         equ 0F847H      ;       - Buffer de avaliação de expressão do BASIC
-RNDX        equ 0F857H      ;       - Contém o último número aleatório (precisão dupla)
+TRCFLG      equ 0F7C4H      ; 1     - Tracing flag (0 = No tracing; Other = Tracing in progress)
 
 ;; **** Math pack
+FBUFFR      equ 0F7C5H      ; 43    - Buffer used by mathematical routines
+DECTMP      equ 0F7F0H      ; 2     - Used to transform decimal integer to floating point number
+DECTM2      equ 0F7F2H      ; 2     - Used by the divisions
+DECCNT      equ 0F7F4H      ; 2     - Used by the divisions
+DAC         equ 0F7F6H      ; 16    - Decimal accumulator
+HOLD8       equ 0F806H      ; 48    - Work area for decimal multiplications
+HOLD2       equ 0F836H      ; 8     - Work area in the execution of numerical operators
+HOLD        equ 0F83EH      ; 8     - Work area in the execution of numerical operators
+ARG         equ 0F847H      ; 16    - Argument (Value used to be calculate with DAC)
+RNDX        equ 0F857H      ; 8     - Last random number generated
+
+;; **** Display
 MAXFIL      equ 0F85FH      ;       - Número de buffers de E/S alocados (BASIC)
 FILTAB      equ 0F860H      ;       - Aponta para a tabela de FCBs dos buffers de E/S (BASIC)
 NULBUF      equ 0F862H      ;       - Aponta para o buffer de E/S

@@ -39,7 +39,7 @@ HKYEAHDL:
     proc
         PUSH AF
         
-        ; Verify if shift+select is pressed
+        ; Verify if shift+select is pressed (03BH for CTRL key)
         CP   03EH           ; Select key pressed?
         JR   NZ,EXIT
         
@@ -80,8 +80,8 @@ HKYEAHDL:
         LD   A,(DE)         ; Get the CSRY value for current page
         OR   A              ; Reset carry flag (update bios attributes)
         CALL COPYATRB       ; Set bios variables using stored attributes in RAM
-        CALL SETSCR         ; Set screen attributes
         CALL Z,CLS          ; Clear current page if CSRY is zero for current page
+        CALL SETSCR         ; Set screen properties
         
         POP  HL
         POP  DE
