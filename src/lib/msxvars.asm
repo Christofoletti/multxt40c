@@ -15,6 +15,7 @@
 ; 
 ; References:
 ;     https://www.msx.org/wiki/System_variables_and_work_area
+;     https://www.msx.org/wiki/System_variables_for_disks
 
 ; Name      equ Address     ; Size  - Description
 ;                          (in bytes)
@@ -64,7 +65,7 @@ MLTATR      equ 0F3D7H      ; 2     - SCREEN 3 sprite attribute table address
 MLTPAT      equ 0F3D9H      ; 2     - SCREEN 3 sprite generator table address
 
 ;; **** Cursor and function key parameters
-CLIKSW      equ 0F3DBH      ; 1     - Key click switch. (0 = Disabled / 1-FF = Enabled)
+CLIKSW      equ 0F3DBH      ; 1     - Key click switch. (0=Disabled, other=Enabled)
 CSRY        equ 0F3DCH      ; 1     - Y-coordinate of text cursor (1..CRTCNT)
 CSRX        equ 0F3DDH      ; 1     - X-coordinate of text cursor (1..LINLEN)
 CONSDFG     equ 0F3DEH      ; 1     - Display function keys flag (0 = do not display keys)
@@ -116,7 +117,7 @@ ASPCT2      equ 0F40DH      ; 2     - 256*aspect ratio for Basic instruction CIR
 ENDPRG      equ 0F40FH      ; 5     - Dummy program end for instructions RESUME ... NEXT. (default DB ":",0,0,0,0)
 ERRFLG      equ 0F414H      ; 1     - Last error code occurred in BASIC
 LPTPOS      equ 0F415H      ; 1     - Position of printer head
-PRTFLG      equ 0F416H      ; 1     - Flag whether to send to printer (0 = screen / other = printer)
+PRTFLG      equ 0F416H      ; 1     - Flag whether to send to printer (0=screen, other=printer)
 NTMSXP      equ 0F417H      ; 1     - 0 If MSX printer (This converts Hiragana to Katakana on Japanese MSX)
 RAWPRT      equ 0F418H      ; 1     - 0 to convert TAB's and unknown characters to spaces
 VLZADR      equ 0F419H      ; 2     - Address of character replaced by VAL
@@ -202,118 +203,173 @@ HOLD        equ 0F83EH      ; 8     - Work area in the execution of numerical op
 ARG         equ 0F847H      ; 16    - Argument (Value used to be calculate with DAC)
 RNDX        equ 0F857H      ; 8     - Last random number generated
 
-;; **** Display
-MAXFIL      equ 0F85FH      ;       - Número de buffers de E/S alocados (BASIC)
-FILTAB      equ 0F860H      ;       - Aponta para a tabela de FCBs dos buffers de E/S (BASIC)
-NULBUF      equ 0F862H      ;       - Aponta para o buffer de E/S
-PTRFIL      equ 0F864H      ;       - Aponta para o FCB do buffer de E/S ativo
-FILNAM      equ 0F866H      ;       - Buffer de nome de arquivo. (BASIC)
-FILNM2      equ 0F871H      ;       - Buffer de nome de arquivo. (BASIC)
-NLONLY      equ 0F87CH      ;       - Usada pelo interpretador BASIC
-SAVEND      equ 0F87DH      ;       - Usada pelo interpretador BASIC
+;; **** File management under basic
+MAXFIL      equ 0F85FH      ; 1     - High legal file number
+FILTAB      equ 0F860H      ; 2     - Starting address of of file data area
+NULBUF      equ 0F862H      ; 2     - Points to file 0 buffer (used by SAVE/LOAD st)
+PTRFIL      equ 0F864H      ; 2     - Points to file data of currently accessing file
+RUNFLG      equ 0F866H      ; 1     - Non-zero when Basic program run after load
+FILNAM      equ 0F866H      ; 11    - File name from Disk-Basic instruction used
+FILNM2      equ 0F871H      ; 11    - Second file name from Disk-Basic instruction used (NAME, COPY, MOVE, etc)
+NLONLY      equ 0F87CH      ; 1     - When loading program (0=NON Basic, other=Basic)
+SAVEND      equ 0F87DH      ; 2     - End address specified in BSAVE
 
-;; **** 
-FNKSTR      equ 0F87FH      ;       - Buffer com strings das teclas de função
-CGPNT       equ 0F91FH      ;       - Aponta para a tabela de caracteres em ROM (Slot ID 0 seguido do endereço 0x1BBF)
-NAMBAS      equ 0F922H      ;       - Base da tabela de nomes no modo de video atual
-CGPBAS      equ 0F924H      ;       - Base da tabela de caracteres no modo de video atual
-PATBAS      equ 0F926H      ;       - Base da tabela de imagens de sprites no modo de ví deo atual
-ATRBAS      equ 0F928H      ;       - Base da tabela de atributos de sprites no modo de ví deo atual
-CLOC        equ 0F92AH      ;       - Endereço do pixel atual (funções gráficas da BIOS)
-CMASK       equ 0F92CH      ;       - Máscara do pixel atual
-MINDEL      equ 0F92DH      ;       - Usado pela instrução LINE
-MAXDEL      equ 0F92FH      ;       - Usado pela instrução LINE
-ASPECT      equ 0F931H      ;       - Usado pela instrução CIRCLE
-CENCNT      equ 0F933H      ;       - Usado pela instrução CIRCLE
-CLINEF      equ 0F935H      ;       - Usado pela instrução CIRCLE
-CNPNTS      equ 0F936H      ;       - Usado pela instrução CIRCLE
-CPLOTF      equ 0F938H      ;       - Usado pela instrução CIRCLE
-CPCNT       equ 0F939H      ;       - Usado pela instrução CIRCLE
-CPCNT8      equ 0F93BH      ;       - Usado pela instrução CIRCLE
-CRCSUM      equ 0F93DH      ;       - Usado pela instrução CIRCLE
-CSTCNT      equ 0F93FH      ;       - Usado pela instrução CIRCLE
-CSCLXY      equ 0F941H      ;       - Usado pela instrução CIRCLE
-CSAVEA      equ 0F942H      ;       - Temporário usado por funções gráficas da BIOS
-CSAVEM      equ 0F944H      ;       - Temporário usado por funções gráficas da BIOS
-CXOFF       equ 0F945H      ;       - Usado pela instrução CIRCLE
-CYOFF       equ 0F947H      ;       - Usado pela instrução CIRCLE
-LOHMSK      equ 0F949H      ;       - Usado pela instrução PAINT
-LOHDIR      equ 0F94AH      ;       - Usado pela instrução PAINT
-LOHADR      equ 0F94BH      ;       - Usado pela instrução PAINT
-LOHCNT      equ 0F94DH      ;       - Usado pela instrução PAINT
-SKPCNT      equ 0F94FH      ;       - Usado pela instrução PAINT
-MOVCNT      equ 0F951H      ;       - Usado pela instrução PAINT
-PDIREC      equ 0F953H      ;       - Usado pela instrução PAINT
-LEPROG      equ 0F954H      ;       - Usado pela instrução PAINT
-RTPROG      equ 0F955H      ;       - Usado pela instrução PAINT
-MCLFLG      equ 0F958H      ;       - Linguagem de macro atual, 0=DRAW, 1-255=PLAY
-QUETAB      equ 0F959H      ;       - Blocos de controle das filas musicais
-QUEBAK      equ 0F971H      ;       - Usado pelo manipulador de fila musical
-VOICAQ      equ 0F975H      ;       - Buffer da fila musical A
-VOICBQ      equ 0F9F5H      ;       - Buffer da fila musical B
-VOICCQ      equ 0FA75H      ;       - Buffer da fila musical C
-RS2IQ       equ 0FAF5H      ;       - Buffer da fila RS232
-PRSCNT      equ 0FB35H      ;       - Usado pelo interpretador BASIC (PLAY)
-SAVSP       equ 0FB36H      ;       - Usado pelo interpretador BASIC (PLAY)
-VOICEN      equ 0FB38H      ;       - Voz atual do interpretador PLAY
-SAVVOL      equ 0FB39H      ;       - Usado pelo interpretador BASIC (PLAY)
-MCLLEN      equ 0FB3BH      ;       - Comprimento do operando de macro-linguagem analisado
-MCLPTR      equ 0FB3CH      ;       - Aponta para caractere de macro-linguagem sendo analisado
-QUEUEN      equ 0FB3EH      ;       - Fila atual do interpretador PLAY
-MUSICF      equ 0FB3FH      ;       - Usado pelo interpretador BASIC (PLAY)
-PLACNT      equ 0FB40H      ;       - Usado pelo interpretador BASIC (PLAY)
-VCBA        equ 0FB41H      ;       - 37  - Data for voice A
-VCBB        equ 0FB66H      ;       - 37  - Data for voice B
-VCBC        equ 0FB8BH      ;       - 37  - Data for voice C
-ENSTOP      equ 0FBB0H      ;       - 1   - <>0 when it is possible to resume execution of a BASIC program (CTRL+SHIFT+GRPH+KANA/CODE to resume)
-BASROM      equ 0FBB1H      ;       - 1   - <>0 if basic is in rom. (CTRL+STOP disabled)
-LINTTB      equ 0FBB2H      ;       - 24  - Table of 24 end-of-line flags for each physical line
-FSTPOS      equ 0FBCAH      ;       - Usada internamente pelo editor de tela do BASIC
-CURSAV      equ 0FBCCH      ;       - Armazena o caractere sob o cursor
-FNKSWI      equ 0FBCDH      ;       - Usada pela rotina CHSNS para determinar se SHIFT está pressionado (0) ou não (1) para apresentar as strings das teclas de função
-FNKFLG      equ 0FBCEH      ;       - Usada pelo BASIC. (indicadores de KEY(n) ON)
-ONGSBF      equ 0FBD8H      ;       - Usado pelo interpretador BASIC
-OLDKEY      equ 0FBDAH      ;       - Armazena o estado anterior da matriz de teclado
-NEWKEY      equ 0FBE5H      ;       - Armazena o estado atual da matriz de teclado
-KEYBUF      equ 0FBF0H      ;       - Buffer circular do teclado (caracteres decodificados)
-LINWRK      equ 0FC18H      ;       - Buffer de linha de tela, usado pelo BIOS
-PATWRK      equ 0FC40H      ;       - Buffer usado pelo BIOS
-BOTTOM      equ 0FC48H      ;       - Armazena o início da RAM usada pelo interpretador BASIC
-TRPTBL      equ 0FC4CH      ;       - Usado pelas instruções de interrupção (ON...) do BASIC
-RTYCNT      equ 0FC9AH      ;       - Não-utilizada
-INTFLG      equ 0FC9BH      ;       - Flag de detecção de CTRL-STOP (3) e STOP (4)
-PADY        equ 0FC9CH      ;       - Última coordenada Y do tablet
-PADX        equ 0FC9DH      ;       - Última coordenada X do tablet
-JIFFY       equ 0FC9EH      ;       - Contador incrementado a cada interrupção do VDP
-INTVAL      equ 0FCA0H      ;       - Duração do intervalo do ON INTERVAL (BASIC)
-INTCNT      equ 0FCA2H      ;       - Contador do ON INTERVAL (BASIC)
-LOWLIM      equ 0FCA4H      ;       - Duração mí nima do bit de partida no cassete (TAPION)
-WINWID      equ 0FCA5H      ;       - Duração de discriminação LO/HI (TAPION)
-GRPHED      equ 0FCA6H      ;       - Variável auxiliar da rotina CNVCHR do BIOS
-ESCCNT      equ 0FCA7H      ;       - Variável auxiliar da rotina CHPUT do BIOS
-INSFLG      equ 0FCA8H      ;       - Indica modo de inserção do editor de tela
-CSRSW       equ 0FCA9H      ;       - Cursor display switch
-CSTYLE      equ 0FCAAH      ;       - Estilo do cursor, bloco (0) ou sublinhado (1-255)
-CAPST       equ 0FCABH      ;       - Status do CAPS LOCK (0=desligado, 1-255=ligado)
-KANAST      equ 0FCACH      ;       - Status do KANA LOCK (0=desligado, 1-255=ligado)
-KANAMD      equ 0FCADH      ;       - Modo kana (MSX japoneses)
-FLBMEM      equ 0FCAEH      ;       - Usada pelo manipulador de erro de E/S
-SCRMOD      equ 0FCAFH      ;       - Modo de tela (SCREEN) atual
-OLDSCR      equ 0FCB0H      ;       - último modo de texto
-CASPRV      equ 0FCB1H      ;       - Temporário de E/S do cassete
-BDRATR      equ 0FCB2H      ;       - Usado pelas rotinas gráficas do BIOS
-GXPOS       equ 0FCB3H      ;       - Temporário das rotinas gráficas do BIOS
-GYPOS       equ 0FCB5H      ;       - Temporário das rotinas gráficas do BIOS
-GRPACX      equ 0FCB7H      ;       - Temporário das rotinas gráficas do BIOS
-GRPACY      equ 0FCB9H      ;       - Temporário das rotinas gráficas do BIOS
-DRWFLG      equ 0FCBBH      ;       - Usado pelo manipulador do DRAW
-DRWSCL      equ 0FCBCH      ;       - Usado pelo manipulador do DRAW
-DRWANG      equ 0FCBDH      ;       - Usado pelo manipulador do DRAW
-RUNBNF      equ 0FCBEH      ;       - Usado pelo manipulador do BLOAD
-SAVENT      equ 0FCBFH      ;       - Usado pelo manipulador do BLOAD
-EXPTBL      equ 0FCC1H      ;       - Indicadores de expansão dos 4 slots, (0x00=não expandido, 0x80=expandido)
-SLTTBL      equ 0FCC5H      ;       - Cópia dos registradores de slot primário (válidos apenas nos slots expandidos)
-SLTATR      equ 0FCC9H      ;       - Atributos de ROM, 16 bytes por slot (desses, 4 por subslot)
-SLTWRK      equ 0FD09H      ;       - Dois bytes de trabalho local para cada uma das 64 extensões de ROM possí veis
-PROCNM      equ 0FD89H      ;       - Buffer para nome de dispositivo ou instrução a ser analisado por uma ROM de extensão
-DEVICE      equ 0FD99H      ;       - Usada para passar um número de dispositivo para uma ROM de extensão.
+;; **** Display
+FNKSTR      equ 0F87FH      ; 160   - Texts for function keys
+CGPNT       equ 0F91FH      ; 2     - Location of the character font used to initialise screen (Slot ID and address)
+NAMBAS      equ 0F922H      ; 2     - Current pattern name table address
+CGPBAS      equ 0F924H      ; 2     - Current pattern generator table address
+PATBAS      equ 0F926H      ; 2     - Current sprite generator table address
+ATRBAS      equ 0F928H      ; 2     - Current sprite attribute table address
+CLOC        equ 0F92AH      ; 2     - Cursor location
+CMASK       equ 0F92CH      ; 1     - Graphic cursor mask (SCREEN 2 to 4) or ordinate (SCREEN 5 to 12)
+MINDEL      equ 0F92DH      ; 2     - Work area used by instruction LINE of Basic
+MAXDEL      equ 0F92FH      ; 2     - End of the work area used by LINE instruction of Basic
+
+;; **** Data area for the CIRCLE instruction of Basic
+ASPECT      equ 0F931H      ; 2     - Aspect ratio of the circle; set by <ratio> of CIRCLE
+CENCNT      equ 0F933H      ; 2     - Counter used by CIRCLE
+CLINEF      equ 0F935H      ; 1     - Flag to draw line to centre
+CNPNTS      equ 0F936H      ; 2     - Point to be plotted in a 45° segment
+CPLOTF      equ 0F938H      ; 1     - Plot polarity flag
+CPCNT       equ 0F939H      ; 2     - Number of points in 1/8 of circle
+CPCNT8      equ 0F93BH      ; 2     - Number of points in the circle
+CRCSUM      equ 0F93DH      ; 2     - Cyclic redundancy check sum of the circle
+CSTCNT      equ 0F93FH      ; 2     - Variable to maintain the number of points of the starting angle
+CSCLXY      equ 0F941H      ; 1     - Scale of X and Y
+
+;; **** Data area for the PAINT instruction of Basic
+CSAVEA      equ 0F942H      ; 2     - Address of the first pixel of different color
+CSAVEM      equ 0F944H      ; 1     - Mask of the first pixel of different color
+CXOFF       equ 0F945H      ; 2     - X offset from center
+CYOFF       equ 0F947H      ; 2     - Y offset from center
+LOHMSK      equ 0F949H      ; 1     - Leftmost position of an LH excursion
+LOHDIR      equ 0F94AH      ; 1     - New painting direction required by an LH excursion
+LOHADR      equ 0F94BH      ; 2     - Leftmost position of an LH
+LOHCNT      equ 0F94DH      ; 2     - Size of an LH excursion
+SKPCNT      equ 0F94FH      ; 2     - Skip count
+MOVCNT      equ 0F951H      ; 2     - Movement count
+PDIREC      equ 0F953H      ; 1     - Direction of the paint
+LEPROG      equ 0F954H      ; 1     - Set to 1 when moving to the left
+RTPROG      equ 0F955H      ; 1     - Set to 1 when moving to the right
+
+;; **** RS-232 and MML buffers
+MCLTAB      equ 0F956H      ; 2     - Used by the instructions DRAW & PLAY in Basic
+MCLFLG      equ 0F958H      ; 1     - Current macro language flag (0=DRAW, 1-255=PLAY)
+QUETAB      equ 0F959H      ; 24    - Queue tables (VOICAQ, VOICBQ, VOICCQ and RS2IQ (RS232))
+QUEBAK      equ 0F971H      ; 1     - Replacement characters table of queues
+VOICAQ      equ 0F975H      ; 128   - Voice A queue of instruction PLAY (PSG)
+VOICBQ      equ 0F9F5H      ; 128   - Voice B queue of instruction PLAY
+VOICCQ      equ 0FA75H      ; 128   - Voice C queue of instruction PLAY
+RS2IQ       equ 0FAF5H      ; 64    - RC-232C queue (MSX1 only)
+
+;; **** Graphic pages (MSX 2 and above)
+DPPAGE      equ 0FAF5H      ; 1     - Displayed page number (MSX2~)
+ACPAGE      equ 0FAF6H      ; 1     - Destination page number (MSX2~)
+
+;; **** System
+AVCSAV      equ 0FAF7H      ; 1     - Copy of AV control port (#F7) content (MSX2+~)
+EXBRSA      equ 0FAF8H      ; 1     - SUB-ROM Slot ID (MSX2~)
+CHRCNT      equ 0FAF9H      ; 1     - Character counter in the buffer, used in KANA-ROM (MSX2~)
+ROMA        equ 0FAFAH      ; 2     - Area to store KANA character (Japanese MSX2~ only)
+MODE        equ 0FAFCH      ; 1     - Flag for screen mode
+NORUSE      equ 0FAFDH      ; 1     - Used by KANJI-ROM for rendering KANJI fonts in graphic modes (MSX2~)
+XSAVE       equ 0FAFEH      ; 2     - X-coordinate for Mouse/Trackball/Lightpen (MSX2~)
+YSAVE       equ 0FB00H      ; 2     - Y-coordinate for Mouse/Trackball/Lightpen (MSX2~)
+LOGOPR      equ 0FB02H      ; 1     - Logical operation code (MSX2~)
+
+;; **** Data Area Used By RS-232C
+RSTMP       equ 0FB03H      ; 1     - Temporary data storage for RS232 Driver
+TOCNT       equ 0FB03H      ; 1     - Counter used by the RS-232C interface
+RSFCB       equ 0FB04H      ; 2     - FCB ("File Control Block") address of the RS-232C
+RSIQLN      equ 0FB06H      ; 1     - Byte DATA used by the RS-232C interface
+MEXBIH      equ 0FB07H      ; 5     - Hook called by the RS-232C
+OLDSTT      equ 0FB0CH      ; 5     - Hook called by the RS-232C
+OLDINT      equ 0FB0CH      ; 5     - Hook called by the RS-232C
+DEVNUM      equ 0FB16H      ; 1     - Byte offset (RS-232C)
+DATCNT      equ 0FB17H      ; 3     - DATA area (RS-232C)
+ERRORS      equ 0FB1AH      ; 1     - RS-232C error code
+FLAGS       equ 0FB1BH      ; 1     - RS-232C flags
+ESTBLS      equ 0FB1CH      ; 1     - Bit boolean (RS-232C)
+COMMSK      equ 0FB1DH      ; 1     - RS-232C mask
+LSTCOM      equ 0FB1EH      ; 1     - Byte Data (RS-232C)
+LSTMOD      equ 0FB1FH      ; 1     - Byte Data (RS-232C)
+
+;; **** Data area for the PLAY instruction of Basic
+PRSCNT      equ 0FB35H      ; 1     - Command counter (PLAY)
+SAVSP       equ 0FB36H      ; 2     - Stack pointer when instruction PLAY is used
+VOICEN      equ 0FB38H      ; 1     - Number of voice played
+SAVVOL      equ 0FB39H      ; 2     - The volume is saved here when Pause
+MCLLEN      equ 0FB3BH      ; 1     - Length of the macro being analyzed
+MCLPTR      equ 0FB3CH      ; 2     - Address of the macro being analyzed
+QUEUEN      equ 0FB3EH      ; 1     - Number of the current queue
+MUSICF      equ 0FB3FH      ; 1     - Music interruption flags
+PLACNT      equ 0FB40H      ; 1     - Number of macro strings in the PLAY queue
+VCBA        equ 0FB41H      ; 37    - Data for voice A
+VCBB        equ 0FB66H      ; 37    - Data for voice B
+VCBC        equ 0FB8BH      ; 37    - Data for voice C
+
+;; **** Keyboard
+ENSTOP      equ 0FBB0H      ; 1     - <>0 when it is possible to resume execution of a BASIC program (CTRL+SHIFT+GRPH+KANA/CODE to resume)
+BASROM      equ 0FBB1H      ; 1     - <>0 if basic is in rom (CTRL+STOP disabled)
+LINTTB      equ 0FBB2H      ; 24    - Table of 24 end-of-line flags for each physical line
+FSTPOS      equ 0FBCAH      ; 2     - first position for inlin
+CURSAV      equ 0FBCCH      ; 1     - ASCII code of character under the cursor
+FNKSWI      equ 0FBCDH      ; 1     - Indicate which function keys is displayed
+FNKFLG      equ 0FBCEH      ; 10    - Function key which have subroutine
+ONGSBF      equ 0FBD8H      ; 1     - Global event flag
+CLIKFL      equ 0FBD9H      ; 1     - Flag to know if the key click has already occurred
+OLDKEY      equ 0FBDAH      ; 11    - Previous status of each keyboard matrix row
+NEWKEY      equ 0FBE5H      ; 11    - New status of each keyboard matrix row
+KEYBUF      equ 0FBF0H      ; 40    - Key code buffer
+
+;; **** Buffers and work areas
+LINWRK      equ 0FC18H      ; 40    - Work area for screen management
+PATWRK      equ 0FC40H      ; 8     - Work area for the name-to-form converter
+BOTTOM      equ 0FC48H      ; 2     - Address of the beginning of the available RAM area
+HIMEM       equ 0FC4AH      ; 2     - Address of the end of the available RAM area
+
+;; **** Interruptions
+TRPTBL      equ 0FC4CH      ; 78    - Tables for each of  (ON...) do BASIC
+RTYCNT      equ 0FC9AH      ; 1     - Interrupt control
+INTFLG      equ 0FC9BH      ; 1     - This flag is set if STOP or CTRL+STOP is pressed
+PADY        equ 0FC9CH      ; 1     - Y-coordinate of a connected touch pad (Until MSX2+)
+PADX        equ 0FC9DH      ; 1     - X-coordinate of a connected touch pad (Until MSX2+)
+JIFFY       equ 0FC9EH      ; 1     - Value of the software clock, each interrupt of the VDP it is increased by 1
+INTVAL      equ 0FCA0H      ; 2     - Contains length of the interval when the ON INTERVAL routine was established
+INTCNT      equ 0FCA2H      ; 2     - ON INTERVAL counter (counts backwards)
+
+;; **** Cassette
+LOWLIM      equ 0FCA4H      ; 1     - Used by the Cassette system (minimal length of startbit)
+WINWID      equ 0FCA5H      ; 1     - Used by the Cassette system (store the difference between a low-and high-cycle)
+
+;; **** Display & System
+GRPHED      equ 0FCA6H      ; 1     - Heading for the output of graphic characters
+ESCCNT      equ 0FCA7H      ; 1     - Escape sequence counter
+INSFLG      equ 0FCA8H      ; 1     - Insert mode flag
+CSRSW       equ 0FCA9H      ; 1     - Cursor display switch
+CSTYLE      equ 0FCAAH      ; 1     - Cursor style normal/insert (0=Full cursor, other=Halve cursor)
+CAPST       equ 0FCABH      ; 1     - Capital status (0=Off, other=On)
+KANAST      equ 0FCACH      ; 1     - Kana mode flags for MSX Japanese, Russian key status ou "Dead Key" status
+KANAMD      equ 0FCADH      ; 1     - KANA/JIS keyboard flag (0=KANA, other=JIS). (Japanese MSX only)
+FLBMEM      equ 0FCAEH      ; 1     - 0 if loading basic program
+SCRMOD      equ 0FCAFH      ; 1     - Current screen mode
+OLDSCR      equ 0FCB0H      ; 1     - Old screen mode
+CASPRV      equ 0FCB1H      ; 1     - Work area for the cassette (until MSX2+)
+BDRATR      equ 0FCB2H      ; 1     - Border color for paint
+GXPOS       equ 0FCB3H      ; 1     - X-position of graphic cursor
+GYPOS       equ 0FCB5H      ; 1     - Y-position of graphic cursor
+GRPACX      equ 0FCB7H      ; 1     - X Graphics Accumulator
+GRPACY      equ 0FCB9H      ; 1     - Y Graphics Accumulator
+DRWFLG      equ 0FCBBH      ; 1     - Used by the instruction DRAW (DrawFlag)
+DRWSCL      equ 0FCBCH      ; 1     - Used by the instruction DRAW (DrawScaling)
+DRWANG      equ 0FCBDH      ; 1     - Used by the instruction DRAW (DrawAngle)
+RUNBNF      equ 0FCBEH      ; 1     - Used by BLOAD handler
+SAVENT      equ 0FCBFH      ; 2     - Used by BLOAD handler
+EXPTBL      equ 0FCC1H      ; 4     - Bit 7 of these variables is a flag for each primary slot to indicate expanded slot
+SLTTBL      equ 0FCC5H      ; 4     - Saves the state of the 4 secondary slot registers of each extended primary slot
+SLTATR      equ 0FCC9H      ; 64    - Slot attributes given during MSX boot process
+SLTWRK      equ 0FD09H      ; 128   - SLTWRK is a 128-byte variable array work area in Main-RAM for ROM applications
+PROCNM      equ 0FD89H      ; 16    - Work aera of the instructions CALL and OPEN
+DEVICE      equ 0FD99H      ; 1     - This byte increases to 255 when SHIFT key was pressed at startup
+HOOKS       equ 0FD9AH      ; 570   - Start of system hooks area (5 bytes per hook handler)

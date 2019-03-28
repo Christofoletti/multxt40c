@@ -27,7 +27,6 @@ HIGHBITS    equ 011110000B  ; Mask for the most significant nibble of a byte
 CR          equ 0DH         ; Carriage return
 LF          equ 0AH         ; Line feed
 MSXVER      equ 0002DH      ; MSX version (0 = MSX 1, 1 = MSX 2, 2 = MSX 2+, 3 = MSX turbo R)
-HIMEM       equ 0FC4AH      ; Address of the end of the available RAM area
     
     ; The binary file header
     db  0FEH                ; MSX binary file byte id
